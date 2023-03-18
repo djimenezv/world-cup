@@ -1,6 +1,12 @@
-export interface RawMatch {
+export interface NewMatch {
     home: string,
     visitor: string,
+}
+
+export interface UpdateMatch {
+    home: number,
+    visitor: number,
+    matchId: string,
 }
 
 export interface Match {

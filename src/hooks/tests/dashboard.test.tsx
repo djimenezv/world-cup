@@ -3,7 +3,7 @@
  */
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useDashboard } from '../useDashboard';
-import { SummaryItem } from '../types';
+import { SummaryItem, UpdateMatch } from '../types';
 
 describe('Dashboard hook', () => {
 
@@ -60,7 +60,35 @@ describe('Dashboard hook', () => {
           matchId:'',
         },
       ]
+    },
+    {
+      weight: 2,
+      matches: [
+        {
+          home: {
+            name: 'Uruguay',
+            goals: 1,
+          },
+          visitor: {
+            name: 'Chile',
+            goals: 1,
+          },
+          matchId:'',
+        },
+        {
+          home: {
+            name: 'Argentina',
+            goals: 1,
+          },
+          visitor: {
+            name: 'Paraguay',
+            goals: 1,
+          },
+          matchId:'',
+        },
+      ]
     }
+
   ]
 
   test('should add a match to the list of matches', async () => {
@@ -68,9 +96,9 @@ describe('Dashboard hook', () => {
     let summaryResult : SummaryItem[] = [];
       
     act(() => {
-      const matchId1 = result.current[0](newMatches[0]);
-      const matchId2 = result.current[0](newMatches[1]);
-      const matchId3 = result.current[0](newMatches[2]);
+      const matchId1 = result.current[1](newMatches[0]);
+      const matchId2 = result.current[1](newMatches[1]);
+      const matchId3 = result.current[1](newMatches[2]);
 
       summaryResult = [
         {
@@ -94,7 +122,7 @@ describe('Dashboard hook', () => {
     });
 
     await waitFor(() => {
-      expect(result.current[2]).toStrictEqual(summaryResult);
+      expect(result.current[0]).toStrictEqual(summaryResult);
     }, { timeout: 3000 });
   });
 
@@ -103,10 +131,10 @@ describe('Dashboard hook', () => {
     let summaryResult : SummaryItem[] = [];
       
     act(() => {
-      const matchId1 = result.current[0](newMatches[0]);
-      const matchId2 = result.current[0](newMatches[1]);
-      const matchId3 = result.current[0](newMatches[2]);
-      result.current[1](matchId3);
+      const matchId1 = result.current[1](newMatches[0]);
+      const matchId2 = result.current[1](newMatches[1]);
+      const matchId3 = result.current[1](newMatches[2]);
+      result.current[2](matchId3);
 
       summaryResult = [
         {
@@ -126,7 +154,63 @@ describe('Dashboard hook', () => {
     });
 
     await waitFor(() => {
-      expect(result.current[2]).toStrictEqual(summaryResult);
+      expect(result.current[0]).toStrictEqual(summaryResult);
+    }, { timeout: 3000});
+  });
+
+  test('should update a matc in the summary succesfully', async () => {
+    const {result} = renderHook(() => useDashboard());
+    let summaryResult : SummaryItem[] = [];
+      
+    act(() => {
+      const matchId1 = result.current[1](newMatches[0]);
+      const matchId2 = result.current[1](newMatches[1]);
+      const matchId3 = result.current[1](newMatches[2]);
+
+      const matchToUpdateArgPar : UpdateMatch = {
+        matchId:matchId3,
+        home: 1,
+        visitor: 1,
+      }
+
+      const matchToUpdateUrCh : UpdateMatch = {
+        matchId:matchId2,
+        home: 1,
+        visitor: 1,
+      }
+
+      result.current[3](matchToUpdateArgPar);
+      result.current[3](matchToUpdateUrCh);
+
+      summaryResult = [
+        {
+          weight: summaryAddResult[0].weight,
+          matches: [
+            {
+              ...summaryAddResult[0].matches[1],
+              matchId: matchId1,
+            }
+          ]
+        },
+        {
+          weight: summaryAddResult[1].weight,
+          matches: [
+            {
+              ...summaryAddResult[1].matches[1],
+              matchId: matchId3,
+            },
+            {
+              ...summaryAddResult[1].matches[0],
+              matchId: matchId2,
+            },
+          ]
+        }
+
+      ]
+    });
+
+    await waitFor(() => {
+      expect(result.current[0]).toStrictEqual(summaryResult);
     }, { timeout: 3000});
   });
 
