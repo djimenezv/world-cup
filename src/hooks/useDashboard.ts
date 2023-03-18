@@ -11,10 +11,10 @@ const teams: Array<string> = [
     'Urugay',
     'Chile',
 ];
-const useDashboard = () : [Array<SummaryItem>, (match:NewMatch) => string, (matchId: string) => void, (updateMatch : UpdateMatch) => void] => {
+const useDashboard = () : [Array<Match>, (match:NewMatch) => string, (matchId: string) => void, (updateMatch : UpdateMatch) => void] => {
   let matchesSummary : any = null;
   
-  const [matches, setMatches] = useState<Array<SummaryItem>>([])
+  const [matches, setMatches] = useState<Array<Match>>([])
 
   useEffect(() => { 
     matchesSummary = summary()
@@ -22,18 +22,21 @@ const useDashboard = () : [Array<SummaryItem>, (match:NewMatch) => string, (matc
 
   const addMatch = (match : NewMatch) : string => {
     const newMatchId = matchesSummary.insert(match);
-    setMatches([...matchesSummary.matches]);
+    const sortedMatches = matchesSummary.matches.flatMap((m: SummaryItem) => m.matches);
+    setMatches(sortedMatches);
     return newMatchId;
   }
 
   const finishMatch = (matchId : string) : void => {
     matchesSummary.remove(matchId);
-    setMatches([...matchesSummary.matches]);
+    const sortedMatches = matchesSummary.matches.flatMap((m: SummaryItem) => m.matches);
+    setMatches(sortedMatches);
   }
 
   const updateMatch = (match: UpdateMatch) => {
     matchesSummary.update(match);
-    setMatches([...matchesSummary.matches]); 
+    const sortedMatches = matchesSummary.matches.flatMap((m: SummaryItem) => m.matches);
+    setMatches(sortedMatches); 
   }
 
   return [matches, addMatch, finishMatch, updateMatch];

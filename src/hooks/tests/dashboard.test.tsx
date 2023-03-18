@@ -3,24 +3,32 @@
  */
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useDashboard } from '../useDashboard';
-import { SummaryItem, UpdateMatch } from '../types';
+import { Match, NewMatch, SummaryItem, UpdateMatch } from '../types';
 
 describe('Dashboard hook', () => {
 
-  const newMatches = [
-    {
-      visitor: 'Colombia',
-      home: 'Brasil',
-    },
-    {
-      visitor: 'Chile',
-      home: 'Uruguay',
-    },
-    {
-      visitor: 'Paraguay',
-      home: 'Argentina',
-    }
-  ];
+  // matches definition
+  const matchBraCol = {
+    visitor: 'Colombia',
+    home: 'Brasil',
+  };
+  
+  const matchUruChi = {
+    visitor: 'Chile',
+    home: 'Uruguay',
+  }
+
+  const matchArgPar = {
+    visitor: 'Paraguay',
+    home: 'Argentina',
+  };
+
+  const matchesLoader = (addMatchFunction: (newMatch: NewMatch) => string) :[string, string, string] => {
+    const matchIdBraCol = addMatchFunction(matchBraCol);
+    const matchIdUryChi = addMatchFunction(matchUruChi);
+    const matchIdArgPar = addMatchFunction(matchArgPar);
+    return [matchIdBraCol, matchIdUryChi, matchIdArgPar];
+  }
 
   const summaryAddResult : SummaryItem[] = [
     {
@@ -93,32 +101,26 @@ describe('Dashboard hook', () => {
 
   test('should add a match to the list of matches', async () => {
     const {result} = renderHook(() => useDashboard());
-    let summaryResult : SummaryItem[] = [];
+    let summaryResult : Match[] = [];
       
     act(() => {
-      const matchId1 = result.current[1](newMatches[0]);
-      const matchId2 = result.current[1](newMatches[1]);
-      const matchId3 = result.current[1](newMatches[2]);
+      // adding matches [{col - bra}, {uru - chi}, {arg - par}]
+      const [matchIdBraCol, matchIdUryChi, matchIdArgPar] = matchesLoader(result.current[1]);
 
       summaryResult = [
         {
-          weight: summaryAddResult[0].weight,
-          matches: [
-            {
-              ...summaryAddResult[0].matches[0],
-              matchId: matchId3,
-            },
-            {
-              ...summaryAddResult[0].matches[1],
-              matchId: matchId1,
-            },
-            {
-              ...summaryAddResult[0].matches[2],
-              matchId: matchId2,
-            }
-          ]
+          ...summaryAddResult[0].matches[0],
+          matchId: matchIdArgPar,
+        },
+        {
+          ...summaryAddResult[0].matches[1],
+          matchId: matchIdBraCol,
+        },
+        {
+          ...summaryAddResult[0].matches[2],
+          matchId: matchIdUryChi,
         }
-      ]
+      ];
     });
 
     await waitFor(() => {
@@ -128,27 +130,21 @@ describe('Dashboard hook', () => {
 
   test('should remove a match from the summary', async () => {
     const {result} = renderHook(() => useDashboard());
-    let summaryResult : SummaryItem[] = [];
+    let summaryResult : Match[] = [];
       
     act(() => {
-      const matchId1 = result.current[1](newMatches[0]);
-      const matchId2 = result.current[1](newMatches[1]);
-      const matchId3 = result.current[1](newMatches[2]);
-      result.current[2](matchId3);
+      // adding matches [{col - bra}, {uru - chi}, {arg - par}]
+      const [matchIdBraCol, matchIdUryChi, matchIdArgPar] = matchesLoader(result.current[1]);
+      result.current[2](matchIdArgPar);
 
       summaryResult = [
         {
-          weight: summaryAddResult[0].weight,
-          matches: [
-            {
-              ...summaryAddResult[0].matches[1],
-              matchId: matchId1,
-            },
-            {
-              ...summaryAddResult[0].matches[2],
-              matchId: matchId2,
-            }
-          ]
+          ...summaryAddResult[0].matches[1],
+          matchId: matchIdBraCol,
+        },
+        {
+          ...summaryAddResult[0].matches[2],
+          matchId: matchIdUryChi,
         }
       ]
     });
@@ -160,21 +156,20 @@ describe('Dashboard hook', () => {
 
   test('should update a matc in the summary succesfully', async () => {
     const {result} = renderHook(() => useDashboard());
-    let summaryResult : SummaryItem[] = [];
+    let summaryResult : Match[] = [];
       
     act(() => {
-      const matchId1 = result.current[1](newMatches[0]);
-      const matchId2 = result.current[1](newMatches[1]);
-      const matchId3 = result.current[1](newMatches[2]);
+      // adding matches [{col - bra}, {uru - chi}, {arg - par}]
+      const [matchIdBraCol, matchIdUryChi, matchIdArgPar] = matchesLoader(result.current[1]);
 
       const matchToUpdateArgPar : UpdateMatch = {
-        matchId:matchId3,
+        matchId:matchIdArgPar,
         home: 1,
         visitor: 1,
       }
 
       const matchToUpdateUrCh : UpdateMatch = {
-        matchId:matchId2,
+        matchId:matchIdUryChi,
         home: 1,
         visitor: 1,
       }
@@ -184,28 +179,17 @@ describe('Dashboard hook', () => {
 
       summaryResult = [
         {
-          weight: summaryAddResult[0].weight,
-          matches: [
-            {
-              ...summaryAddResult[0].matches[1],
-              matchId: matchId1,
-            }
-          ]
+          ...summaryAddResult[0].matches[1],
+          matchId: matchIdBraCol,
         },
         {
-          weight: summaryAddResult[1].weight,
-          matches: [
-            {
-              ...summaryAddResult[1].matches[1],
-              matchId: matchId3,
-            },
-            {
-              ...summaryAddResult[1].matches[0],
-              matchId: matchId2,
-            },
-          ]
-        }
-
+          ...summaryAddResult[1].matches[1],
+          matchId: matchIdArgPar,
+        },
+        {
+          ...summaryAddResult[1].matches[0],
+          matchId: matchIdUryChi,
+        },
       ]
     });
 
