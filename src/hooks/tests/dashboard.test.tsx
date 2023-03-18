@@ -92,7 +92,7 @@ describe('Dashboard hook', () => {
     matchId:'argentina-paraguay',
   };
 
-  test('should add a match to the list of matches', async () => {
+  test('should add a match to the list of matches and sort the summary', async () => {
     const {result} = renderHook(() => useDashboard());
     let summaryResult : Match[] = [];
       
@@ -192,5 +192,23 @@ describe('Dashboard hook', () => {
     }, { timeout: 3000 });
   });
 
+  test('should return error if try to add match with empty name', async () => {
+    const {result} = renderHook(() => useDashboard());
+    let addingResult : OperationResponse;
+
+    act(() => {
+      // adding matches [{col - ''}]
+      addingResult = result.current[1]({
+        home:'',
+        visitor:'Colombia',
+      });
+
+    });
+
+    await waitFor(() => {
+      expect(addingResult.response).toBe(null);
+      expect(addingResult.error.message).toBe('invalid team name');
+    }, { timeout: 3000 });
+  });
 
 });
