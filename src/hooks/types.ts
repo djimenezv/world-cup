@@ -29,3 +29,9 @@ export interface MatchReference {
     matchNode: Match,
     weightNode : SummaryItem,
 }
+
+
+export interface OperationResponse {
+    response: string | null,
+    error: any | null,
+}

@@ -1,9 +1,6 @@
 import { Match, MatchReference, NewMatch, SummaryItem, UpdateMatch } from "./types";
-import { v4 as uuidv4 } from 'uuid';
 
-const getNewMatchWithId = (rawMatch : NewMatch) => {
-    const matchId = uuidv4();
-  
+const getNewMatchWithId = (rawMatch : NewMatch) => {  
     const match : Match = {
       visitor: {
         name: rawMatch.visitor,
@@ -13,7 +10,7 @@ const getNewMatchWithId = (rawMatch : NewMatch) => {
         name: rawMatch.home,
         goals: 0,
       },
-      matchId,
+      matchId: `${rawMatch.home}-${rawMatch.visitor}`.toLowerCase(),
     }
   
     return match; 
@@ -87,22 +84,35 @@ const findPositionNamesDimension = (newMatch: Match, matches : Match[]) : number
     return low;
 }
 
-const insertNewMatch = (match: NewMatch, currentSummary : SummaryItem[], matchReferences: Map<string, {}>) => { 
+const insertNewMatch = (match: NewMatch, currentSummary : SummaryItem[], matchReferences: Map<string, {}>) => {
+
+    if(!match.home || !match.visitor) throw new Error('invalid team name');
+
     const newMatch = getNewMatchWithId(match);
+
+    const alreadyAdded = matchReferences.get(newMatch.matchId);
+
+    if(alreadyAdded) throw new Error('Match already added');
+
     return addMatch(newMatch, currentSummary, matchReferences);
 }
 
-const insertExistingMatch = (match: Match, currentSummary : SummaryItem[], matchReferences: Map<string, {}>) => { 
+const insertUpdatedMatch = (match: Match, currentSummary : SummaryItem[], matchReferences: Map<string, {}>) => { 
     return addMatch(match, currentSummary, matchReferences);
 }
 
 const remove = (matchId: string, matchRefences: Map<string, MatchReference>) => {
+
+    if(!matchId) throw new Error('Invalid match id');
+
     const matchReference = matchRefences.get(matchId);
     const matchIndex = matchReference?.weightNode.matches.indexOf(matchReference.matchNode); 
     if(matchIndex !== undefined)matchReference?.weightNode.matches.splice(matchIndex, 1);
 }
 
 const update = (match: UpdateMatch, summaryMatches: SummaryItem[], matchRefences: Map<string, MatchReference>) => {
+    if(!match.matchId) throw new Error('invalid match id');
+
     const matchToUpdate = matchRefences.has(match.matchId) ? matchRefences.get(match.matchId) : null;
 
     if(!matchToUpdate) throw new Error(`match ${match.matchId} not found`);
@@ -125,7 +135,7 @@ const update = (match: UpdateMatch, summaryMatches: SummaryItem[], matchRefences
     // removing existing match reference from map
     matchRefences.delete(match.matchId);
     // adding back updated match using insert method to keep the summary sorted
-    insertExistingMatch(matchToUpdateClone, summaryMatches, matchRefences)
+    insertUpdatedMatch(matchToUpdateClone, summaryMatches, matchRefences)
 }
 
 const summary = () => {
