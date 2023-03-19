@@ -30,6 +30,11 @@ H4 {
     border-radius: 10px;
 }
 
+.container__matches__items {
+    border: 3px solid #FECD1A;
+    border-radius: 10px;
+}
+
 .container__match {
     display: flex;
     flex-direction: row;
@@ -42,6 +47,10 @@ H4 {
     justify-content: end;
     gap: 10px;
     border-bottom: solid 3px #FECD1A;
+}
+
+.container__matches__items:last-child {
+    border-bottom: none;
 }
 
 .container__match__item__team {

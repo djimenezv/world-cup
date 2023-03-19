@@ -87,20 +87,22 @@ const DashboardViewer = () => {
         </div>
         <div className='container__matches'>
         <h4>World Cup Dashboard</h4>
-        {
-          summary?.map((m:Match) => 
-            <div className='container__match' key={m.matchId}>
-              <div className='container__match__item'>
-                <span className='container__match__item__team'>{m.home.name}</span>
-                <span className='container__match__item__goals'>{m.home.goals}</span>
+        <div className='container__matches__items'>
+          {
+            summary?.map((m:Match) => 
+              <div className='container__match' key={m.matchId}>
+                <div className='container__match__item'>
+                  <span className='container__match__item__team'>{m.home.name}</span>
+                  <span className='container__match__item__goals'>{m.home.goals}</span>
+                </div>
+                <div className='container__match__item justify-start'>
+                  <span className='container__match__item__goals'>{m.visitor.goals}</span>
+                  <span className='container__match__item__team'>{m.visitor.name}</span>
+                </div>
               </div>
-              <div className='container__match__item justify-start'>
-                <span className='container__match__item__goals'>{m.visitor.goals}</span>
-                <span className='container__match__item__team'>{m.visitor.name}</span>
-              </div>
-            </div>
-          )
-        }
+            )
+          }
+        </div>
         </div>
       </div>
     </div>
