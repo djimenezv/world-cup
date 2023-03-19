@@ -1,3 +1,28 @@
+/**
+ * This module allows to keep data related to games in a sorted way is based in two data structures a two dimension matrix tp hold 
+ * sorted data and a dictionary that allows to access the data in fast way, about the two dimensions matrix SummaryItem[weight[matches]]
+ * the dimensions of this data structure is based on the weight score and the names of the teams in the score for example the way 
+ * the data will be store for the games below
+ * 
+ * col 0 - 0 bra
+ * ing 5 - 0 arg
+ * bra 2 - 2 ita
+ * jap 0 - 0 ger
+ * 
+ * 
+ * A way to visualize how the data structure will store this data will be as follow
+ * 
+ * weight    matchs
+ * [5]  ->   [{ing 5 - 0 arg}]
+ * [4]  ->   [{bra 2 - 2 ita}]
+ * [0]  ->   [{col 0 - 0 bra}, {jap 0 - 0 ger}]
+ * 
+ * Each time an operation is executed (insert, update, delete) the methods findPositionWeight and findPositionNames using binary search
+ * will found the exact position where the item is located or where should be inserted so the data in the structure will keep sorted, in the
+ * other hand the aditional data structure called matchReferences holds a dictionary with the key as the gameId and the value as a
+ * pointer to the game and the weight index position so finding an item to be updated or removed will have a time complexity of O(1)
+ */
+
 import { Match, MatchReference, NewMatch, SummaryItem, UpdateMatch } from "./types";
 
 const getNewMatchWithId = (rawMatch : NewMatch) => {  
@@ -138,6 +163,10 @@ const update = (match: UpdateMatch, summaryMatches: SummaryItem[], matchRefences
     insertUpdatedMatch(matchToUpdateClone, summaryMatches, matchRefences)
 }
 
+/**
+ * 
+ * @returns operations (insert, update, delete) to interact with the summary games
+ */
 const summary = () => {
     // holds a sorted summary of the matches
     const summaryItems: SummaryItem[] = [];
