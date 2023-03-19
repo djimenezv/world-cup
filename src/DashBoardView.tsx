@@ -76,9 +76,9 @@ const DashboardViewer = () => {
 
   return (
     <div className="container">
-      <h4>World Cup Dashboard</h4>
       <div className='container__panels'>
         <div className='container__actions'>
+          <h4>Actions</h4>
           <ol>
           {
             actions.map(a =><li>{a}</li>)
@@ -86,6 +86,7 @@ const DashboardViewer = () => {
           </ol>
         </div>
         <div className='container__matches'>
+        <h4>World Cup Dashboard</h4>
         {
           summary?.map((m:Match) => 
             <div className='container__match' key={m.matchId}>
