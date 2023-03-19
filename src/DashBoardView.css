@@ -1,3 +1,7 @@
+H4 {
+ color: #FD3A69;
+}
+
 .container {
   width: 100%;
   display: flex;
@@ -5,10 +9,29 @@
   align-items: center;
   margin: 20px 0;
   font-size: 25px;
+  font-weight: bold;
+}
+
+.container__actions {
+    font-weight: 400;
+    color: #120078;
+}
+
+.container__panels {
+    width: 80%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    justify-items: center;
+    justify-content: center;
+}
+
+.container__matches {
+    border: solid #FECD1A;
+    width: 100%;
+    border-radius: 10px;
 }
 
 .container__match {
-    width: 80%;
     display: flex;
     flex-direction: row;
 }
@@ -19,15 +42,15 @@
     display: flex;
     justify-content: end;
     gap: 10px;
+    border-bottom: solid 3px #FECD1A;
 }
 
 .container__match__item__team {
-    font-weight: bold;
-    color: darkgray;
+    color: #120078;
 }
 
 .container__match__item__goals {
-    color: red;
+    color: #FD3A69;
 }
 
 .justify-start {
